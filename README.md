@@ -1,4 +1,3 @@
-# Personal-Finance-Tracker
 # 📊 Personal Finance Tracker
 
 A simple, clean, and user-friendly personal finance tracker built using HTML, CSS, and JavaScript. This lightweight web app allows users to track their incomes and expenses, view total balance, and store transaction history locally in their browser.
