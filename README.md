@@ -19,7 +19,7 @@ A simple, clean, and user-friendly personal finance tracker built using HTML, CS
 1. **Download the project files** or clone this repo.
 
 ```
-git clone https://github.com/yourusername/personal-finance-tracker.git
+git clone https://github.com/laxmithapas/personal-finance-tracker.git
 ```
 
 2. Open `personal_finance_tracker.html` in any modern web browser.
