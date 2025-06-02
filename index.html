@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Finance Tracker (with Local Storage)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      padding: 20px;
+    }
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+    .total {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>💸 Personal Finance Tracker</h2>
+  <input type="text" id="desc" placeholder="Description">
+  <input type="number" id="amount" placeholder="Amount">
+  <select id="type">
+    <option value="income">Income</option>
+    <option value="expense">Expense</option>
+  </select>
+  <button onclick="addTransaction()">Add Transaction</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th>Amount</th>
+        <th>Type</th>
+        <th>Date</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="transactions"></tbody>
+  </table>
+
+  <div class="total" id="balance">Total Balance: ₹0</div>
+</div>
+
+<script>
+  let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+  let balance = 0;
+
+  function updateTable() {
+    const table = document.getElementById('transactions');
+    table.innerHTML = '';
+    balance = 0;
+    transactions.forEach((item, index) => {
+      const row = table.insertRow();
+      row.insertCell(0).innerText = item.desc;
+      row.insertCell(1).innerText = `₹${item.amount}`;
+      row.insertCell(2).innerText = item.type;
+      row.insertCell(3).innerText = item.date;
+      const actionCell = row.insertCell(4);
+      const delButton = document.createElement('button');
+      delButton.innerText = 'Delete';
+      delButton.onclick = function() {
+        transactions.splice(index, 1);
+        localStorage.setItem('transactions', JSON.stringify(transactions));
+        updateTable();
+      }
+      actionCell.appendChild(delButton);
+      balance += (item.type === 'income' ? item.amount : -item.amount);
+    });
+    document.getElementById('balance').innerText = `Total Balance: ₹${balance}`;
+  }
+
+  function addTransaction() {
+    const desc = document.getElementById('desc').value;
+    const amount = parseFloat(document.getElementById('amount').value);
+    const type = document.getElementById('type').value;
+    if (!desc || !amount) {
+      alert('Please enter valid description and amount.');
+      return;
+    }
+    const date = new Date().toLocaleDateString();
+    transactions.push({ desc, amount, type, date });
+    localStorage.setItem('transactions', JSON.stringify(transactions));
+    updateTable();
+    document.getElementById('desc').value = '';
+    document.getElementById('amount').value = '';
+  }
+
+  window.onload = updateTable;
+</script>
+
+</body>
+</html>
