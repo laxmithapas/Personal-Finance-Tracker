@@ -7,35 +7,61 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f4f6f8;
+      background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
       padding: 20px;
+      min-height: 100vh;
     }
     .container {
       max-width: 700px;
       margin: 0 auto;
-      background: #ffffff;
+      background: #ffffffcc;
       padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
     }
     h2 {
       text-align: center;
-      color: #333;
+      color: #2d3a4b;
+      letter-spacing: 1px;
     }
     input, select, button {
       width: 100%;
       padding: 10px;
       margin: 8px 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      border: 1px solid #b6c6e0;
+      border-radius: 8px;
+      background: #f7fbff;
+      transition: border 0.2s;
+    }
+    input:focus, select:focus {
+      border: 1.5px solid #6a9ae2;
+      outline: none;
+    }
+    button {
+      background: linear-gradient(90deg, #6a9ae2 0%, #4f8edc 100%);
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: linear-gradient(90deg, #4f8edc 0%, #6a9ae2 100%);
     }
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
+      background: #f7fbff;
+      border-radius: 8px;
+      overflow: hidden;
     }
     table, th, td {
-      border: 1px solid #ddd;
+      border: 1px solid #e3eaf5;
+    }
+    th {
+      background: #e3eaf5;
+      color: #2d3a4b;
     }
     th, td {
       padding: 10px;
@@ -44,10 +70,315 @@
     .total {
       font-weight: bold;
       margin-top: 10px;
+      color: #2d3a4b;
+      background: #e3eaf5;
+      border-radius: 6px;
+      padding: 8px 0;
+    }
+    .chart-container {
+      width: 100%;
+      margin-top: 30px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    .chart-controls {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+    .chart-controls label {
+      margin-right: 8px;
+      font-weight: 500;
+      color: #4f8edc;
+    }
+    /* Decorative background elements */
+    .bg-shape {
+      position: fixed;
+      z-index: -1;
+      border-radius: 50%;
+      opacity: 0.15;
+      filter: blur(8px);
+    }
+    .bg-shape1 {
+      width: 300px; height: 300px;
+      background: #6a9ae2;
+      top: -80px; left: -80px;
+    }
+    .bg-shape2 {
+      width: 200px; height: 200px;
+      background: #f7b267;
+      bottom: 40px; right: 40px;
+    }
+    /* Subtle 3D-style finance icons */
+    .bg-icon {
+      position: fixed;
+      z-index: -1;
+      opacity: 0.13;
+      filter: drop-shadow(0 8px 16px #0002);
+      pointer-events: none;
+    }
+    .bg-icon-dollar {
+      top: 60px;
+      left: 60px;
+      width: 80px;
+      height: 80px;
+    }
+    .bg-icon-coin {
+      bottom: 120px;
+      left: 80px;
+      width: 60px;
+      height: 60px;
+    }
+    .bg-icon-graph {
+      top: 120px;
+      right: 80px;
+      width: 90px;
+      height: 90px;
+    }
+    /* Menu icon and sidebar styles */
+    .menu-icon {
+      position: fixed;
+      top: 28px;
+      right: 32px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      z-index: 100;
+    }
+    .menu-icon div {
+      height: 5px;
+      background: #4f8edc;
+      border-radius: 3px;
+      margin: 3px 0;
+      transition: 0.3s;
+    }
+    .sidebar-menu {
+      position: fixed;
+      top: 0; right: -400px;
+      width: 350px;
+      height: 100%;
+      background: #fff;
+      box-shadow: -2px 0 16px #0002;
+      z-index: 99;
+      transition: right 0.3s;
+      padding: 24px 16px 16px 16px;
+      overflow-y: auto;
+    }
+    .sidebar-menu.open {
+      right: 0;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 2rem;
+      color: #4f8edc;
+      position: absolute;
+      top: 12px;
+      right: 18px;
+      cursor: pointer;
+    }
+    .sidebar-content {
+      margin-top: 40px;
+    }
+    .toggle-transactions-btn {
+      width: 100%;
+      background: linear-gradient(90deg, #6a9ae2 0%, #4f8edc 100%);
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle-transactions-btn[aria-expanded="true"] {
+      background: linear-gradient(90deg, #4f8edc 0%, #6a9ae2 100%);
+    }
+    #transactionsSection {
+      margin-bottom: 16px;
+      max-height: 350px;
+      overflow-y: auto;
+      transition: max-height 0.3s;
+    }
+    /* Dynamic 3D-style emoji background */
+    .emoji-bg {
+      position: fixed;
+      z-index: -2;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none;
+      overflow: hidden;
+      animation: emoji-bg-float 18s linear infinite;
+    }
+    .emoji-float {
+      position: absolute;
+      font-size: 3.5rem;
+      filter: drop-shadow(0 8px 16px #0002) blur(0.5px);
+      opacity: 0.18;
+      user-select: none;
+      will-change: transform, opacity;
+      animation: emoji-float 12s ease-in-out infinite alternate;
+    }
+    .emoji-float.e1 { left: 10vw; top: 12vh; animation-delay: 0s;}
+    .emoji-float.e2 { left: 70vw; top: 10vh; animation-delay: 2s;}
+    .emoji-float.e3 { left: 30vw; top: 70vh; animation-delay: 4s;}
+    .emoji-float.e4 { left: 80vw; top: 60vh; animation-delay: 6s;}
+    .emoji-float.e5 { left: 50vw; top: 40vh; animation-delay: 8s;}
+    .emoji-float.e6 { left: 20vw; top: 50vh; animation-delay: 10s;}
+    @keyframes emoji-float {
+      0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 0.18;}
+      50% { transform: translateY(-30px) scale(1.08) rotate(8deg); opacity: 0.23;}
+      100% { transform: translateY(0) scale(1) rotate(-8deg); opacity: 0.18;}
+    }
+    @keyframes emoji-bg-float {
+      0% { filter: blur(0.5px);}
+      50% { filter: blur(2px);}
+      100% { filter: blur(0.5px);}
+    }
+    @media (max-width: 800px) {
+      .sidebar-menu {
+        width: 100vw;
+        max-width: 100vw;
+      }
+    }
+    .sidebar-summary {
+      margin-bottom: 18px;
+    }
+    .sidebar-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .tab-btn {
+      flex: 1;
+      background: #e3eaf5;
+      color: #4f8edc;
+      border: none;
+      border-radius: 6px 6px 0 0;
+      padding: 8px 0;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .tab-btn[aria-selected="true"] {
+      background: linear-gradient(90deg, #6a9ae2 0%, #4f8edc 100%);
+      color: #fff;
+    }
+    .sidebar-tab-content {
+      /* Only one tab content visible at a time */
+    }
+    .transactions-table-wrapper {
+      overflow-x: auto;
+      max-width: 100%;
+      margin-bottom: 12px;
+    }
+    .transactions-table-wrapper table {
+      min-width: 600px;
+      margin-bottom: 0;
     }
   </style>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+<!-- Dynamic 3D-style emoji background -->
+<div class="emoji-bg">
+  <span class="emoji-float e1">💸</span>
+  <span class="emoji-float e2">💰</span>
+  <span class="emoji-float e3">📈</span>
+  <span class="emoji-float e4">🪙</span>
+  <span class="emoji-float e5">💳</span>
+  <span class="emoji-float e6">🤑</span>
+</div>
+<div class="bg-shape bg-shape1"></div>
+<div class="bg-shape bg-shape2"></div>
+<!-- Subtle 3D-style SVG finance icons -->
+<svg class="bg-icon bg-icon-dollar" viewBox="0 0 64 64">
+  <defs>
+    <radialGradient id="dollarGrad" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#fffde4"/>
+      <stop offset="100%" stop-color="#6a9ae2"/>
+    </radialGradient>
+  </defs>
+  <circle cx="32" cy="32" r="30" fill="url(#dollarGrad)" />
+  <text x="32" y="42" text-anchor="middle" font-size="36" font-family="Arial" font-weight="bold" fill="#4f8edc" style="text-shadow:0 2px 6px #fff8;">$</text>
+</svg>
+<svg class="bg-icon bg-icon-coin" viewBox="0 0 48 48">
+  <defs>
+    <radialGradient id="coinGrad" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#fffbe6"/>
+      <stop offset="100%" stop-color="#f7b267"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="24" cy="24" rx="22" ry="20" fill="url(#coinGrad)" />
+  <ellipse cx="24" cy="24" rx="14" ry="12" fill="#fff8" />
+  <text x="24" y="30" text-anchor="middle" font-size="18" font-family="Arial" font-weight="bold" fill="#e05d5d">¢</text>
+</svg>
+<svg class="bg-icon bg-icon-graph" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="graphGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a3d8f4"/>
+      <stop offset="100%" stop-color="#6a9ae2"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="40" width="10" height="16" rx="2" fill="url(#graphGrad)" />
+  <rect x="24" y="28" width="10" height="28" rx="2" fill="url(#graphGrad)" />
+  <rect x="40" y="16" width="10" height="40" rx="2" fill="url(#graphGrad)" />
+  <polyline points="8,48 29,36 50,20" fill="none" stroke="#f4845f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="8" cy="48" r="2.5" fill="#f4845f"/>
+  <circle cx="29" cy="36" r="2.5" fill="#f4845f"/>
+  <circle cx="50" cy="20" r="2.5" fill="#f4845f"/>
+</svg>
+
+<!-- Hamburger menu icon -->
+<div id="menuIcon" class="menu-icon" onclick="toggleMenu()">
+  <div></div>
+  <div></div>
+  <div></div>
+</div>
+
+<!-- Sidebar menu for transactions and balances -->
+<div id="sidebarMenu" class="sidebar-menu">
+  <button class="close-btn" onclick="toggleMenu()">&times;</button>
+  <div class="sidebar-content">
+    <!-- Summary section always visible -->
+    <div class="sidebar-summary">
+      <div class="total" id="income">Total Income: ₹0</div>
+      <div class="total" id="expenses">Total Expenses: ₹0</div>
+      <div class="total" id="balance">Current Balance: ₹0</div>
+    </div>
+    <!-- Tab controls for switching views -->
+    <div class="sidebar-tabs">
+      <button class="tab-btn" id="tab-summary" onclick="showSidebarTab('summary')" aria-selected="true">Summary</button>
+      <button class="tab-btn" id="tab-transactions" onclick="showSidebarTab('transactions')" aria-selected="false">Transactions</button>
+    </div>
+    <!-- Transactions section, hidden by default, with horizontal scroll for table -->
+    <div id="transactionsSection" class="sidebar-tab-content" style="display:none;">
+      <div class="transactions-table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th>Amount</th>
+              <th>Type</th>
+              <th>Category</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="transactions"></tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Summary tab content (empty, since summary is always visible) -->
+    <div id="summarySection" class="sidebar-tab-content" style="display:block;"></div>
+  </div>
+</div>
+
 <div class="container">
   <h2>💸 Personal Finance Tracker</h2>
   <input type="text" id="desc" placeholder="Description">
@@ -56,69 +387,227 @@
     <option value="income">Income</option>
     <option value="expense">Expense</option>
   </select>
+  <input type="text" id="category" placeholder="Category (e.g. Groceries, Dining Out)">
+  <input type="date" id="date">
   <button onclick="addTransaction()">Add Transaction</button>
+</div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Description</th>
-        <th>Amount</th>
-        <th>Type</th>
-        <th>Date</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody id="transactions"></tbody>
-  </table>
-
-  <div class="total" id="balance">Total Balance: ₹0</div>
+<div class="chart-container">
+  <div class="chart-controls">
+    <label for="chartType">Chart Type:</label>
+    <select id="chartType" onchange="updateChart()">
+      <option value="bar">Bar</option>
+      <option value="pie">Pie</option>
+      <option value="doughnut">Doughnut</option>
+    </select>
+    <label for="dataType" style="margin-left:16px;">Data:</label>
+    <select id="dataType" onchange="updateChart()">
+      <option value="expenses">Expenses by Category</option>
+      <option value="income">Income by Category</option>
+      <option value="both">Income vs Expenses</option>
+    </select>
+  </div>
+  <canvas id="expenseChart"></canvas>
 </div>
 
 <script>
   let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
   let balance = 0;
+  let chart;
 
   function updateTable() {
     const table = document.getElementById('transactions');
     table.innerHTML = '';
     balance = 0;
+    let totalIncome = 0;
+    let totalExpenses = 0;
     transactions.forEach((item, index) => {
       const row = table.insertRow();
       row.insertCell(0).innerText = item.desc;
       row.insertCell(1).innerText = `₹${item.amount}`;
       row.insertCell(2).innerText = item.type;
-      row.insertCell(3).innerText = item.date;
-      const actionCell = row.insertCell(4);
+      row.insertCell(3).innerText = item.category || '';
+      row.insertCell(4).innerText = item.date;
+      const actionCell = row.insertCell(5);
       const delButton = document.createElement('button');
       delButton.innerText = 'Delete';
       delButton.onclick = function() {
         transactions.splice(index, 1);
         localStorage.setItem('transactions', JSON.stringify(transactions));
         updateTable();
+        updateChart();
       }
       actionCell.appendChild(delButton);
+      if (item.type === 'income') {
+        totalIncome += item.amount;
+      } else {
+        totalExpenses += item.amount;
+      }
       balance += (item.type === 'income' ? item.amount : -item.amount);
     });
-    document.getElementById('balance').innerText = `Total Balance: ₹${balance}`;
+    document.getElementById('income').innerText = `Total Income: ₹${totalIncome}`;
+    document.getElementById('expenses').innerText = `Total Expenses: ₹${totalExpenses}`;
+    document.getElementById('balance').innerText = `Current Balance: ₹${balance}`;
+    updateChart();
   }
 
   function addTransaction() {
     const desc = document.getElementById('desc').value;
     const amount = parseFloat(document.getElementById('amount').value);
     const type = document.getElementById('type').value;
+    const category = document.getElementById('category').value || '';
+    const dateInput = document.getElementById('date').value;
     if (!desc || !amount) {
       alert('Please enter valid description and amount.');
       return;
     }
-    const date = new Date().toLocaleDateString();
-    transactions.push({ desc, amount, type, date });
+    const date = dateInput || new Date().toLocaleDateString();
+    transactions.push({ desc, amount, type, category, date });
     localStorage.setItem('transactions', JSON.stringify(transactions));
     updateTable();
     document.getElementById('desc').value = '';
     document.getElementById('amount').value = '';
+    document.getElementById('category').value = '';
+    document.getElementById('date').value = '';
   }
 
-  window.onload = updateTable;
+  function updateChart() {
+    const dataType = document.getElementById('dataType') ? document.getElementById('dataType').value : 'expenses';
+    const chartType = document.getElementById('chartType') ? document.getElementById('chartType').value : 'bar';
+    const ctx = document.getElementById('expenseChart').getContext('2d');
+    if (chart) chart.destroy();
+
+    if (dataType === 'both') {
+      // Show grouped bar chart: categories on x, two bars per category (income, expense)
+      const incomeData = {};
+      const expenseData = {};
+      transactions.forEach(item => {
+        const cat = item.category || 'Uncategorized';
+        if (item.type === 'income') {
+          incomeData[cat] = (incomeData[cat] || 0) + item.amount;
+        } else if (item.type === 'expense') {
+          expenseData[cat] = (expenseData[cat] || 0) + item.amount;
+        }
+      });
+      // Union of all categories
+      const categories = Array.from(new Set([...Object.keys(incomeData), ...Object.keys(expenseData)]));
+      const incomeAmounts = categories.map(cat => incomeData[cat] || 0);
+      const expenseAmounts = categories.map(cat => expenseData[cat] || 0);
+
+      chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: categories,
+          datasets: [
+            {
+              label: 'Income',
+              data: incomeAmounts,
+              backgroundColor: 'rgba(76, 175, 80, 0.5)', // green
+              borderColor: '#4caf50',
+              borderWidth: 1
+            },
+            {
+              label: 'Expenses',
+              data: expenseAmounts,
+              backgroundColor: 'rgba(255,99,132,0.5)', // red
+              borderColor: '#e05d5d',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: true },
+            title: { display: true, text: 'Income vs Expenses by Category' }
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+      return;
+    }
+
+    // Single type: expenses or income
+    const dataObj = {};
+    transactions.forEach(item => {
+      if (dataType === 'expenses' && item.type === 'expense') {
+        const cat = item.category || 'Uncategorized';
+        dataObj[cat] = (dataObj[cat] || 0) + item.amount;
+      }
+      if (dataType === 'income' && item.type === 'income') {
+        const cat = item.category || 'Uncategorized';
+        dataObj[cat] = (dataObj[cat] || 0) + item.amount;
+      }
+    });
+    const categories = Object.keys(dataObj);
+    const amounts = Object.values(dataObj);
+
+    // Color scheme
+    function getCategoryColors(categories, type) {
+      if (type === 'income') {
+        // greenish
+        const baseColors = [
+          '#81c784', '#a5d6a7', '#388e3c', '#b2ff59', '#43a047',
+          '#c8e6c9', '#66bb6a', '#00e676', '#b9f6ca', '#1b5e20'
+        ];
+        return categories.map((_, i) => baseColors[i % baseColors.length]);
+      } else {
+        // reddish/original
+        const baseColors = [
+          '#6a9ae2', '#f7b267', '#f4845f', '#a3d8f4', '#e05d5d',
+          '#7ed6df', '#e056fd', '#686de0', '#f6e58d', '#303952'
+        ];
+        return categories.map((_, i) => baseColors[i % baseColors.length]);
+      }
+    }
+
+    chart = new Chart(ctx, {
+      type: chartType,
+      data: {
+        labels: categories,
+        datasets: [{
+          label: dataType === 'income' ? 'Income by Category' : 'Expenses by Category',
+          data: amounts,
+          backgroundColor: getCategoryColors(categories, dataType),
+          borderColor: '#fff',
+          borderWidth: chartType === 'bar' ? 1 : 2
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: chartType !== 'bar' },
+          title: { display: true, text: dataType === 'income' ? 'Income by Category' : 'Expenses by Category' }
+        },
+        scales: chartType === 'bar' ? {
+          y: { beginAtZero: true }
+        } : {}
+      }
+    });
+  }
+
+  function showSidebarTab(tab) {
+    // Tabs: 'summary', 'transactions'
+    document.getElementById('summarySection').style.display = tab === 'summary' ? 'block' : 'none';
+    document.getElementById('transactionsSection').style.display = tab === 'transactions' ? 'block' : 'none';
+    document.getElementById('tab-summary').setAttribute('aria-selected', tab === 'summary');
+    document.getElementById('tab-transactions').setAttribute('aria-selected', tab === 'transactions');
+  }
+
+  function toggleMenu() {
+    document.getElementById('sidebarMenu').classList.toggle('open');
+    // Default to summary tab when opening
+    if (document.getElementById('sidebarMenu').classList.contains('open')) {
+      showSidebarTab('summary');
+    }
+  }
+
+  window.onload = function() {
+    updateTable();
+    updateChart();
+  }
 </script>
 
 </body>
